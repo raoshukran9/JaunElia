@@ -17,12 +17,14 @@ type ThemeContextType = {
   isDark: boolean;
   toggleTheme: () => void;
   theme: Theme;
+  mode: 'light' | 'dark'; // ✅ Add mode
 };
 
 const ThemeContext = createContext<ThemeContextType>({
   isDark: false,
   toggleTheme: () => {},
   theme: LightTheme,
+  mode: 'light', // ✅ default mode
 });
 
 type ThemeProviderProps = {
@@ -38,6 +40,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     isDark,
     toggleTheme,
     theme: isDark ? DarkTheme : LightTheme,
+    mode: isDark ? 'dark' : 'light', // ✅ provide mode
   };
 
   return (

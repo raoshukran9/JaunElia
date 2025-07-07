@@ -3,10 +3,7 @@ import { Text, TextProps, StyleSheet } from 'react-native';
 
 const UrduText: React.FC<TextProps> = ({ style, children, ...props }) => {
   return (
-    <Text
-      {...props}
-      style={[styles.urdu, style]}
-    >
+    <Text {...props} style={[styles.urdu, style]}>
       {children}
     </Text>
   );
@@ -14,8 +11,9 @@ const UrduText: React.FC<TextProps> = ({ style, children, ...props }) => {
 
 const styles = StyleSheet.create({
   urdu: {
-    fontFamily: 'JameelNooriNastaleeqKasheeda',
+    fontFamily: 'JameelNooriNastaleeqRegular', // ✅ Use exact name
     fontSize: 16,
+    lineHeight: 28,
     textAlign: 'right',
   },
 });

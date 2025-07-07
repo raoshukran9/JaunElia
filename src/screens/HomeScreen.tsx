@@ -1,4 +1,5 @@
-import React from 'react';
+// HomeScreen.tsx
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,13 +8,21 @@ import {
   StyleSheet,
   FlatList,
   ListRenderItem,
+  ScrollView,
 } from 'react-native';
 import { useTheme } from '../themes/ThemeContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Slider from '../components/Slider';
 import BookCard from '../components/BookCard';
+import TodayShair from '../data/TodayShair';
+import TodayNasar from '../data/TodayNasar';
 import frontruff from '../assets/images/naviconimage.jpg';
 import books from '../data/books.json';
+import { useNavigation } from '@react-navigation/native';
+
+import UrduText from '../components/UrduText';
+import UrduHeading from '../components/UrduHeading';
+import UrduHeaderName from '../components/UrduHeaderName';
 
 type Book = {
   id: string;
@@ -24,98 +33,181 @@ type Book = {
 
 const HomeScreen = () => {
   const { theme } = useTheme();
+  const navigation: any = useNavigation();
+  const [currentTime, setCurrentTime] = useState('');
+
+  useEffect(() => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    };
+    const formatted = now.toLocaleString('en-US', options);
+    setCurrentTime(formatted);
+  }, []);
 
   const handleBookPress = (book: Book) => {
     console.log('Tapped Book:', book.title);
   };
 
   const renderItem: ListRenderItem<Book> = ({ item }) => (
-    <BookCard book={item} onPress={handleBookPress} />
+    <BookCard book={item} onPress={() => handleBookPress(item)} />
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Top Section */}
-      <View style={styles.topRow}>
-        <View style={styles.leftProfile}>
-          <Image source={frontruff} style={styles.profileImage} />
-          <View style={styles.textWrapper}>
-            <Text style={[styles.name, { color: theme.text, fontFamily: 'JameelNooriNastaleeqKasheeda' }]}>
-              جونؔ ایلیا
-            </Text>
-            <Text style={[styles.dates, { color: theme.text, fontFamily: 'JameelNooriNastaleeqKasheeda' }]}>
-              1931 - 2002
-            </Text>
+    <ScrollView style={{ backgroundColor: theme.background }}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.topRow}>
+          <View style={styles.leftProfile}>
+            <Image source={frontruff} style={styles.profileImage} />
+            <View style={styles.textWrapper}>
+              <UrduHeaderName style={[styles.name, { color: theme.text }]}>
+                جونؔ ایلیا
+              </UrduHeaderName>
+              <UrduText style={[styles.dates, { color: theme.text }]}>
+                1931 - 2002
+              </UrduText>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.searchButton}>
+            <Ionicons name="search" size={24} color={theme.text} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Slider */}
+        <Slider />
+
+        {/* Unicode Books Section */}
+        <View style={styles.booksSection}>
+          <View style={styles.booksHeader}>
+            <UrduHeading style={[styles.sectionTitle, { color: theme.text }]}>
+              یونی کوڈ کتب
+            </UrduHeading>
+            <TouchableOpacity onPress={() => navigation.navigate('UnicodeBooks')}>
+              <UrduHeading style={[styles.moreButton, { color: theme.accent }]}>
+                مزید دیکھیے
+              </UrduHeading>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={books}
+            horizontal
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            renderItem={renderItem}
+          />
+        </View>
+
+        {/* آج کا شعر */}
+        <View style={styles.sectionRow}>
+          <Text style={[styles.dateText, { color: theme.text }]}>{currentTime}</Text>
+          <View style={styles.rightTitleWrapper}>
+            <UrduHeading style={[styles.centeredTitle, { color: theme.text }]}>
+              آج کا شعر
+            </UrduHeading>
           </View>
         </View>
-        <TouchableOpacity style={styles.searchButton}>
-          <Ionicons name="search" size={24} color={theme.text} />
-        </TouchableOpacity>
-      </View>
+        <TodayShair />
 
-      {/* Slider */}
-      <Slider />
-
-      {/* Books Section */}
-      <View style={styles.booksSection}>
-        <View style={styles.booksHeader}>
-          <TouchableOpacity onPress={() => console.log('مزید دیکھیے')}>
-            <Text
-              style={[
-                styles.moreButton,
-                { color: theme.accent || '#007bff', fontFamily: 'JameelNooriNastaleeqKasheeda' },
-              ]}
-            >
-              مزید دیکھیے
-            </Text>
-          </TouchableOpacity>
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: theme.text, fontFamily: 'JameelNooriNastaleeqKasheeda' },
-            ]}
-          >
-            یونیکوڈ کتب
-          </Text>
+        {/* آج کی نثر */}
+        <View style={styles.sectionRow}>
+          <Text style={[styles.dateText, { color: theme.text }]}>{currentTime}</Text>
+          <View style={styles.rightTitleWrapper}>
+            <UrduHeading style={[styles.centeredTitle, { color: theme.text }]}>
+              آج کی نثر
+            </UrduHeading>
+          </View>
         </View>
-
-        <FlatList
-          data={books}
-          horizontal
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          key={'horizontal-books'}
-          renderItem={renderItem}
-        />
+        <TodayNasar />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 40 },
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    paddingBottom: 30,
+  },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 10,
+    marginBottom: 20,
   },
-  leftProfile: { flexDirection: 'row', alignItems: 'center' },
-  profileImage: { width: 60, height: 60, borderRadius: 30 },
-  textWrapper: { marginLeft: 10 },
-  name: { fontSize: 16, fontWeight: 'bold' },
-  dates: { fontSize: 12 },
-  searchButton: { padding: 10 },
-  booksSection: { paddingHorizontal: 20, marginTop: 10 },
-  booksHeader: {
+  leftProfile: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
     alignItems: 'center',
   },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold' },
-  moreButton: { fontSize: 14 },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  textWrapper: {
+    marginLeft: 10,
+    alignItems: 'flex-end',
+    maxWidth: 140,
+  },
+  name: {
+    fontSize: 20,
+    lineHeight: 30,
+  },
+  dates: {
+    fontSize: 12,
+    lineHeight: 20,
+  },
+  searchButton: {
+    padding: 10,
+  },
+  booksSection: {
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  booksHeader: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    lineHeight: 38,
+  },
+  moreButton: {
+    fontSize: 13,
+    lineHeight: 38,
+  },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 25,
+    marginBottom: 12,
+  },
+  dateText: {
+    fontSize: 10.5,
+    flex: 1,
+    lineHeight: 18,
+  },
+  rightTitleWrapper: {
+    flex: 3,
+    alignItems: 'flex-end',
+  },
+  centeredTitle: {
+    fontSize: 16,
+    lineHeight: 38,
+    textAlign: 'right',
+  },
 });
 
 export default HomeScreen;

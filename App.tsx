@@ -1,9 +1,11 @@
+// App.tsx
 import 'react-native-gesture-handler';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import TabNavigator from './src/navigation/TabNavigator';
 import { ThemeProvider, useTheme } from './src/themes/ThemeContext';
+import StackNavigator from './src/navigation/StackNavigator';
+
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
@@ -15,7 +17,7 @@ const AppContent = () => {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
       <NavigationContainer>
-        <TabNavigator />
+        <StackNavigator /> 
       </NavigationContainer>
     </>
   );

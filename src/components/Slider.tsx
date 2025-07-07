@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
 import Swiper from '@ng-ha/react-native-swiper';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import { useTheme } from '../themes/ThemeContext';
-
 const { width } = Dimensions.get('window');
 
 const sliderImages = [
