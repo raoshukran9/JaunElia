@@ -9,6 +9,7 @@ import {
   FlatList,
   ListRenderItem,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { useTheme } from '../themes/ThemeContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,9 +18,8 @@ import BookCard from '../components/BookCard';
 import TodayShair from '../data/TodayShair';
 import TodayNasar from '../data/TodayNasar';
 import frontruff from '../assets/images/naviconimage.jpg';
-import books from '../data/books.json';
+import { fetchAllBooks } from '../firebase/fetchAllBooks';
 import { useNavigation } from '@react-navigation/native';
-
 import UrduText from '../components/UrduText';
 import UrduHeading from '../components/UrduHeading';
 import UrduHeaderName from '../components/UrduHeaderName';
@@ -35,6 +35,8 @@ const HomeScreen = () => {
   const { theme } = useTheme();
   const navigation: any = useNavigation();
   const [currentTime, setCurrentTime] = useState('');
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const now = new Date();
@@ -50,8 +52,18 @@ const HomeScreen = () => {
     setCurrentTime(formatted);
   }, []);
 
+  useEffect(() => {
+    const fetchBooks = async () => {
+      const data = await fetchAllBooks();
+      setBooks(data);
+      setLoading(false);
+    };
+    fetchBooks();
+  }, []);
+
   const handleBookPress = (book: Book) => {
     console.log('Tapped Book:', book.title);
+    // navigation.navigate('BookDetail', { bookId: book.id }); // Future detail screen
   };
 
   const renderItem: ListRenderItem<Book> = ({ item }) => (
@@ -94,13 +106,18 @@ const HomeScreen = () => {
               </UrduHeading>
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={books}
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            renderItem={renderItem}
-          />
+
+          {loading ? (
+            <ActivityIndicator size="large" color={theme.accent} />
+          ) : (
+            <FlatList
+              data={books}
+              horizontal
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              renderItem={renderItem}
+            />
+          )}
         </View>
 
         {/* آج کا شعر */}
